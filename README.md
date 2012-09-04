@@ -1,0 +1,5 @@
+# pmf
+
+```
+npm install pmf
+```
