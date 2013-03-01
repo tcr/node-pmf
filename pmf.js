@@ -203,6 +203,10 @@ function Suite (hypos) {
 Suite.prototype = new Pmf();
 
 Suite.prototype.update = function (data) {
+	if (Array.isArray(data)) {
+		data.map(this.update.bind(this));
+		return;
+	}
 	this.keys().forEach(function (hypo) {
 		var like = this.likelihood(hypo, data);
 		this.multiply(hypo, like)
