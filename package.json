@@ -1,6 +1,6 @@
 {
   "name": "pmf",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Pmf port of Thinking Stats Pmf.py",
   "main": "pmf.js",
   "repository": {

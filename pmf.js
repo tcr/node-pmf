@@ -131,6 +131,15 @@ Pmf.prototype.normalize = function (fraction) {
 	}.bind(this));
 };
 
+Pmf.prototype.peak = function () {
+	var top = Math.max.apply(null, this.values());
+	for (var key in this.hash) {
+		if (this.hash[key] == top) {
+			return key;
+		}
+	}
+}
+
 // Chooses a random element from this PMF.
 Pmf.prototype.random = function () {
 	if (!this.values().length) {
@@ -184,6 +193,7 @@ Pmf.prototype.exp = function () {
 
 
 function Suite (hypos) {
+	Pmf.call(this);
 	hypos.forEach(function (k) {
 		this.set(k, 1);
 	}.bind(this));
