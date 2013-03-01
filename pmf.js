@@ -37,6 +37,10 @@ Dictionary.prototype.keys = function () {
 	return Object.keys(this.hash);
 };
 
+Dictionary.prototype.toJSON = function () {
+	return JSON.parse(JSON.stringify(this.hash));
+};
+
 // Gets an unsorted sequence of frequencies.
 Dictionary.prototype.values = function () {
 	return this.keys().map(function (key) {
@@ -109,11 +113,6 @@ function Pmf (hash, name) {
 	this.name = name;
 }
 
-// Pmf keys are floats.
-Pmf.prototype.keys = function () {
-	return Dictionary.prototype.keys.call(this).map(Number);
-}
-
 // Returns the probability for a given key.
 Pmf.prototype.probability = function (x, def) {
 	return this.get(x, def);
@@ -127,7 +126,9 @@ Pmf.prototype.normalize = function (fraction) {
 	if (total == 0) {
 		throw new Error('Total probability is zero.');
 	}
-	this.multiply(fraction / total);
+	this.keys().forEach(function (k) {
+		this.multiply(k, fraction / total);
+	}.bind(this));
 };
 
 // Chooses a random element from this PMF.
@@ -180,9 +181,37 @@ Pmf.prototype.exp = function () {
 	});
 };
 
+
+
+function Suite (hypos) {
+	hypos.forEach(function (k) {
+		this.set(k, 1);
+	}.bind(this));
+	this.normalize();
+}
+
+Suite.prototype = new Pmf();
+
+Suite.prototype.update = function (data) {
+	this.keys().forEach(function (hypo) {
+		var like = this.likelihood(hypo, data);
+		this.multiply(hypo, like)
+	}.bind(this));
+	this.normalize();
+}
+
 /**
  * Module API.
  */
 
-exports.Hist = Hist;
-exports.Pmf = Pmf;
+exports.creatHist = function () {
+	return new Hist();
+};
+
+exports.createPmf = function () {
+	return new Pmf();
+};
+
+exports.createSuite = function (hypos) {
+	return new Suite(hypos);
+};
